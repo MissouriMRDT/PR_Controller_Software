@@ -3,7 +3,18 @@
 #include <SPI.h>
 #include <LiquidCrystal_I2C.h>
 #include <ESP8266WiFi.h>
+
 #include "PR_Controller_Header.h"
+#include "RoveComm.h"
+#include "RoveCommManifest.h"
+#include "RoveCommPacket.h"
+
+#ifndef STASSID
+#define STASSID "test"
+#define STAPSK "test"
+#endif
+
+RoveCommWifiUdp RoveComm;
 
 
 //ADC Setup
@@ -24,6 +35,23 @@ LiquidCrystal_I2C lcd(0x38,2,1,0,4,5,6,7,3,POSITIVE);
 
 void setup() {
   Serial.begin(115200);
+  
+  //WiFi Setup
+  IPAddress ip(192,168,1,141);
+  IPAddress gateway(192,168,1,1);
+  IPAddress subnet(255,255,255,0);
+  WiFi.config(ip,gateway,subnet);
+  WiFi.begin(STASSID, STAPSK);
+  Serial.print("Connecting to Network");
+  while(WiFi.status() != WL_CONNECTED){
+    Serial.print(".");
+    delay(500);
+  }
+  Serial.println();
+  Serial.print("Connected! IP address: ");
+  Serial.println(WiFi.localIP());
+
+  //LCD and PIN Setup
   lcd.begin(lcdColumns,lcdRows);
   pinMode(D0,OUTPUT);
   pinMode(D3,INPUT);
@@ -39,5 +67,9 @@ void setup() {
 void loop() {
   DisplayTest(lcd,adc);
   menu(lcd,adc,SD3,SD2);
+  if(WiFi.status() == WL_CONNECTED)
+    digitalWrite(D0,HIGH);
+  else
+    digitalWrite(D0,LOW);
 
 }
