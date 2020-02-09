@@ -22,15 +22,17 @@ void RoverWelcome(LiquidCrystal_I2C lcd)
 
 void DisplayTest(LiquidCrystal_I2C lcd, MCP3008 adc)
 {
+  double LEFT_VEL =  (((adc.readADC(0) - 504.0)/504)*(1000));
+  double RIGHT_VEL = (((adc.readADC(2) - 502.0)/502)*(1000));
   lcd.clear();
   lcd.setCursor(0,0);
-  lcd.print("LX " + String(adc.readADC(0)));
+  lcd.print("LV " + String(LEFT_VEL));
   lcd.setCursor(8,0);
-  lcd.print("LY " + String(adc.readADC(1)));
+  lcd.print("LY " + String(adc.readADC(0)));
   lcd.setCursor(0,1);
-  lcd.print("RX " + String(adc.readADC(2)));
+  lcd.print("RV " + String(RIGHT_VEL));
   lcd.setCursor(8,1);
-  lcd.print("RY " + String(adc.readADC(5)));
+  lcd.print("XY " + String(adc.readADC(2)));
   delay(100);
   return;
 }
@@ -38,8 +40,13 @@ void DisplayTest(LiquidCrystal_I2C lcd, MCP3008 adc)
 void MainDisplay(LiquidCrystal_I2C lcd, MCP3008 adc)
 {
   lcd.setCursor(0,0);
-  lcd.print("NW_STR: ");
-  lcd.print(WiFi.RSSI());
+  lcd.print("STR:");
+  lcd.print(WiFi.RSSI());         //Signal strength above -85 may be unusable or too weak
+  lcd.print(" TANK:");
+  if(adc.readADC(6) > 100)
+    lcd.print("ON ");
+  else
+    lcd.print("OFF");
 }
 
 void menu(LiquidCrystal_I2C lcd, MCP3008 adc, int SD3, int SD2)
@@ -109,8 +116,10 @@ void menu(LiquidCrystal_I2C lcd, MCP3008 adc, int SD3, int SD2)
         curSel = 1;
       if((cursor_CurX == cursorX1)&&(cursor_CurY == cursorY1))
         curSel = 0;
-      if((adc.readADC(5) < 100)&&(curSel == 0))
+      if((adc.readADC(5) < 100)&&(curSel == 0)){
         exitMenu = true;
+        lcd.clear();
+      }
     }
   }
   return;

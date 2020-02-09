@@ -22,9 +22,25 @@ RoveCommWifiUdp RoveComm;
 #define Dout D6
 #define Din D7
 #define CS D8
+#define TANK 6
 MCP3008 adc(CLK,Din,Dout,CS);
 
-//Define SD Ports
+//Joystick Values
+#define JOY_LEFT_Y 0  //adc.readADC(0) to read value 
+#define JOY_LEFT_X 1  //Max JOY value is 1023
+#define JOY_RIGHT_Y 2
+#define JOY_RIGHT_X 3
+
+#define JOY_LEFT_IDLE 504.0 //Idling ADC value of Joystick
+#define JOY_RIGHT_IDLE 502.0
+#define JOY_HALF_MAX 511.5
+#define MAX_JOY_VALUE 1023
+
+//Drivebaord Controlls
+double LEFT_VEL;      //(-1000,1000)
+double RIGHT_VEL;
+
+//Define ESP SD Ports (read as digitalRead 9/10)
 int SD3 = 10;
 int SD2 = 9;
 
@@ -66,11 +82,50 @@ void setup() {
 }
 
 void loop() {
-  MainDisplay(lcd,adc);
+  //MainDisplay(lcd,adc);
+  //DisplayTest(lcd,adc);
   menu(lcd,adc,SD3,SD2);
+  
   if(WiFi.status() == WL_CONNECTED)
     digitalWrite(D0,HIGH);
   else
     digitalWrite(D0,LOW);
+
+
+  //Tank Drive for Valkyrie (2019)
+  double LEFT_VEL_DBL =  (((adc.readADC(JOY_LEFT_Y) - JOY_LEFT_IDLE)/JOY_HALF_MAX)*(1000));      //(-1000,1000)
+  double RIGHT_VEL_DBL = (((adc.readADC(JOY_RIGHT_Y) - JOY_RIGHT_IDLE)/JOY_HALF_MAX )*(1000));
+      
+  int LEFT_VEL = LEFT_VEL_DBL;
+  int RIGHT_VEL = RIGHT_VEL_DBL;
+    
+  if((LEFT_VEL < 5)&&(LEFT_VEL > -5))
+    LEFT_VEL = 0;
+  if((RIGHT_VEL < 5)&&(RIGHT_VEL > -5))
+    RIGHT_VEL = 0;
+  
+  if(LEFT_VEL > 1000)
+    LEFT_VEL = 1000;
+  if(RIGHT_VEL > 1000)
+    RIGHT_VEL = 1000;
+
+  int LEFTRIGHT_VEL [2] = {LEFT_VEL,RIGHT_VEL};
+    
+  if(adc.readADC(TANK) > 100)
+  {
+   RoveComm.write(RC_DRIVEBOARD_DRIVELEFTRIGHT_DATAID,RC_DRIVEBOARD_DRIVELEFTRIGHT_DATACOUNT,LEFTRIGHT_VEL);
+  }
+
+  lcd.clear();
+  lcd.setCursor(0,0);
+  lcd.print("LV " + String(LEFT_VEL));
+  lcd.setCursor(8,0);
+  lcd.print("LY " + String(adc.readADC(0)));
+  lcd.setCursor(0,1);
+  lcd.print("RV " + String(RIGHT_VEL));
+  lcd.setCursor(8,1);
+  lcd.print("XY " + String(adc.readADC(2)));
+  delay(100);
+  return;
 
 }
