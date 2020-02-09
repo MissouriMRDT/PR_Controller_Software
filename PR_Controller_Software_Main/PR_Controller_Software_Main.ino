@@ -10,8 +10,8 @@
 #include "RoveCommPacket.h"
 
 #ifndef STASSID
-#define STASSID "test"
-#define STAPSK "test"
+#define STASSID "MRDT Valkyrie"
+//#define STAPSK "test"
 #endif
 
 RoveCommWifiUdp RoveComm;
@@ -36,12 +36,22 @@ LiquidCrystal_I2C lcd(0x38,2,1,0,4,5,6,7,3,POSITIVE);
 void setup() {
   Serial.begin(115200);
   
+  //LCD and PIN Setup
+  lcd.begin(lcdColumns,lcdRows);
+  pinMode(D0,OUTPUT);
+  pinMode(D3,INPUT);
+  pinMode(D6,INPUT);
+  pinMode(D4,INPUT);
+  pinMode(SD2,INPUT);
+  pinMode(SD3,INPUT);
+  RoverWelcome(lcd);
+  
   //WiFi Setup
   IPAddress ip(192,168,1,141);
   IPAddress gateway(192,168,1,1);
   IPAddress subnet(255,255,255,0);
   WiFi.config(ip,gateway,subnet);
-  WiFi.begin(STASSID, STAPSK);
+  WiFi.begin(STASSID);
   Serial.print("Connecting to Network");
   while(WiFi.status() != WL_CONNECTED){
     Serial.print(".");
@@ -51,21 +61,12 @@ void setup() {
   Serial.print("Connected! IP address: ");
   Serial.println(WiFi.localIP());
 
-  //LCD and PIN Setup
-  lcd.begin(lcdColumns,lcdRows);
-  pinMode(D0,OUTPUT);
-  pinMode(D3,INPUT);
-  pinMode(D6,INPUT);
-  pinMode(D4,INPUT);
-  pinMode(SD2,INPUT);
-  pinMode(SD3,INPUT);
-
-  RoverWelcome(lcd);
+  lcd.clear();
 
 }
 
 void loop() {
-  DisplayTest(lcd,adc);
+  MainDisplay(lcd,adc);
   menu(lcd,adc,SD3,SD2);
   if(WiFi.status() == WL_CONNECTED)
     digitalWrite(D0,HIGH);

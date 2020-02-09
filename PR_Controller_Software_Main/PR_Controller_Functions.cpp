@@ -1,17 +1,22 @@
 #include "PR_Controller_Header.h"
+#include <ESP8266WiFi.h>
 
 void RoverWelcome(LiquidCrystal_I2C lcd)
 {
 	lcd.setCursor(0,0);
 	lcd.print("   Mars Rover   ");
-	for(int i = 0; i<5; i++)
+	for(int i = 0; i<3; i++)
 	{
-		lcd.setCursor(i+5,1);
+		lcd.setCursor(i+6,1);
     delay(100);
 		lcd.print(".");
 		delay(400);
 	}
 	lcd.clear();
+  lcd.setCursor(2,0);
+  lcd.print("Connecting To");
+  lcd.setCursor(4,1);
+  lcd.print("RoveComm");
 	return;
 }
 
@@ -28,6 +33,13 @@ void DisplayTest(LiquidCrystal_I2C lcd, MCP3008 adc)
   lcd.print("RY " + String(adc.readADC(5)));
   delay(100);
   return;
+}
+
+void MainDisplay(LiquidCrystal_I2C lcd, MCP3008 adc)
+{
+  lcd.setCursor(0,0);
+  lcd.print("NW_STR: ");
+  lcd.print(WiFi.RSSI());
 }
 
 void menu(LiquidCrystal_I2C lcd, MCP3008 adc, int SD3, int SD2)
