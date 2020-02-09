@@ -120,11 +120,11 @@ void loop() {
   lcd.setCursor(0,0);
   lcd.print("LV " + String(LEFT_VEL));
   lcd.setCursor(8,0);
-  lcd.print("LY " + String(adc.readADC(0)));
+  lcd.print("STR:");
+  lcd.print(WiFi.RSSI());         //Signal strength above -85 may be unusable or too weak
   lcd.setCursor(0,1);
   lcd.print("RV " + String(RIGHT_VEL));
   lcd.setCursor(8,1);
-  lcd.print("XY " + String(adc.readADC(2)));
   delay(100);
   return;
 
