@@ -12,4 +12,6 @@ void menu(LiquidCrystal_I2C lcd, MCP3008 adc,int SD3,int SD2);        //Displays
 
 void MainDisplay(LiquidCrystal_I2C lcd, MCP3008 adc);                  //idling display after connection to RoveComm
 
+void tankDrive(int joyLeftY, int joyRightY, float joyLeftIdle, float joyRightIdle, float joyHalfMax, MCP3008 adc, int LeftRight_Ve[]); //Returns matrix with left and right velocity values
+
 #endif

@@ -124,3 +124,23 @@ void menu(LiquidCrystal_I2C lcd, MCP3008 adc, int SD3, int SD2)
   }
   return;
 }
+void tankDrive(int joyLeftY, int joyRightY, float joyLeftIdle, float joyRightIdle, float joyHalfMax, MCP3008 adc,int LeftRight_Vel[])
+{
+  int leftVelocity =  (((adc.readADC(joyLeftY) - joyLeftIdle)/joyHalfMax)*(1000));      //(-1000,1000)
+  int rightVelocity = (((adc.readADC(joyRightY) - joyRightIdle)/joyHalfMax )*(1000));
+
+  if((leftVelocity < 5)&&(leftVelocity > -5))
+    leftVelocity = 0;
+  if((rightVelocity < 5)&&(rightVelocity > -5))
+    rightVelocity = 0;
+  
+  if(leftVelocity > 1000)
+    leftVelocity = 1000;
+  if(rightVelocity > 1000)
+    rightVelocity = 1000;
+
+  LeftRight_Vel[0] = leftVelocity;
+  LeftRight_Vel[1] = rightVelocity;
+  return;
+
+}

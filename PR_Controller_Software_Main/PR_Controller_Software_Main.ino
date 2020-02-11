@@ -93,23 +93,8 @@ void loop() {
 
 
   //Tank Drive for Valkyrie (2019)
-  double LEFT_VEL_DBL =  (((adc.readADC(JOY_LEFT_Y) - JOY_LEFT_IDLE)/JOY_HALF_MAX)*(1000));      //(-1000,1000)
-  double RIGHT_VEL_DBL = (((adc.readADC(JOY_RIGHT_Y) - JOY_RIGHT_IDLE)/JOY_HALF_MAX )*(1000));
-      
-  int LEFT_VEL = LEFT_VEL_DBL;
-  int RIGHT_VEL = RIGHT_VEL_DBL;
-    
-  if((LEFT_VEL < 5)&&(LEFT_VEL > -5))
-    LEFT_VEL = 0;
-  if((RIGHT_VEL < 5)&&(RIGHT_VEL > -5))
-    RIGHT_VEL = 0;
-  
-  if(LEFT_VEL > 1000)
-    LEFT_VEL = 1000;
-  if(RIGHT_VEL > 1000)
-    RIGHT_VEL = 1000;
-
-  int LEFTRIGHT_VEL [2] = {LEFT_VEL,RIGHT_VEL};
+  int LEFTRIGHT_VEL[2];
+  tankDrive(JOY_LEFT_Y, JOY_RIGHT_Y, JOY_LEFT_IDLE, JOY_RIGHT_IDLE, JOY_HALF_MAX, adc,LEFTRIGHT_VEL);
     
   if(adc.readADC(TANK) > 100)
   {
