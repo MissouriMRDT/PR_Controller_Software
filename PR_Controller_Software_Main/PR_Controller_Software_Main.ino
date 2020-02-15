@@ -10,8 +10,6 @@
 #include "RoveCommPacket.h"
 
 #ifndef STASSID
-#define STASSID "MRDT Valkyrie"
-//#define STAPSK "test"
 #endif
 
 RoveCommWifiUdp RoveComm;
@@ -63,6 +61,9 @@ void setup() {
   RoverWelcome(lcd);
   
   //WiFi Setup
+  String NET_NAME = RoverSelectMenu(lcd,adc,SD3,SD2);
+  #define STASSID NET_NAME
+  #define STAPSK "test1234"
   IPAddress ip(192,168,1,141);
   IPAddress gateway(192,168,1,1);
   IPAddress subnet(255,255,255,0);
@@ -103,12 +104,12 @@ void loop() {
 
   lcd.clear();
   lcd.setCursor(0,0);
-  lcd.print("LV " + String(LEFT_VEL));
+  lcd.print("LV " + String(LEFTRIGHT_VEL[0]));
   lcd.setCursor(8,0);
   lcd.print("STR:");
   lcd.print(WiFi.RSSI());         //Signal strength above -85 may be unusable or too weak
   lcd.setCursor(0,1);
-  lcd.print("RV " + String(RIGHT_VEL));
+  lcd.print("RV " + String(LEFTRIGHT_VEL[1]));
   lcd.setCursor(8,1);
   delay(100);
   return;

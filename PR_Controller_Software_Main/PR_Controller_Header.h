@@ -6,6 +6,8 @@
 
 void RoverWelcome(LiquidCrystal_I2C lcd);                             //Displays on Start-Up
 
+String RoverSelectMenu(LiquidCrystal_I2C lcd, MCP3008 adc,int SD3, int SD2);     //Menu start-up to select which rover to connect to. Returns string of network name.
+
 void DisplayTest(LiquidCrystal_I2C lcd, MCP3008 adc);                 //Displays all ADC Values on screen
 
 void menu(LiquidCrystal_I2C lcd, MCP3008 adc,int SD3,int SD2);        //Displays menu with 4 available sub-menus

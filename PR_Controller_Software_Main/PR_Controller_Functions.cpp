@@ -12,12 +12,60 @@ void RoverWelcome(LiquidCrystal_I2C lcd)
 		lcd.print(".");
 		delay(400);
 	}
-	lcd.clear();
-  lcd.setCursor(2,0);
-  lcd.print("Connecting To");
-  lcd.setCursor(4,1);
-  lcd.print("RoveComm");
 	return;
+}
+
+String RoverSelectMenu(LiquidCrystal_I2C lcd, MCP3008 adc, int SD3, int SD2)
+{
+  int OptSelected = 0;
+  String RoverName = "Rover 2020";
+  lcd.clear();
+  lcd.setCursor(0,0);
+  lcd.print("  Select Rover  ");
+  lcd.setCursor(0,1);
+  lcd.print(":2020:");
+  lcd.setCursor(9,1);
+  lcd.print(":VALK:");
+  lcd.setCursor(6,1);
+  lcd.print("*");
+
+  while(1)
+  {
+    yield();
+    if(digitalRead(D3) == LOW)
+    {
+      lcd.setCursor(8,1);
+      lcd.print(" ");
+      lcd.setCursor(6,1);
+      lcd.print("*");
+      RoverName = "Rover 2020";
+      
+    }
+    if(digitalRead(SD3) == LOW)
+    {
+      lcd.setCursor(6,1);
+      lcd.print(" ");
+      lcd.setCursor(8,1);
+      lcd.print("*");
+      RoverName = "MRDT Valkyrie";
+    }
+    if(adc.readADC(5) < 100)
+    {
+      lcd.clear();
+      lcd.setCursor(0,0);
+      lcd.print(RoverName);
+      lcd.setCursor(0,1);
+      lcd.print("Selected");
+      delay(1500);
+      lcd.clear();
+      lcd.setCursor(2,0);
+      lcd.print("Connecting To");
+      lcd.setCursor(4,1);
+      lcd.print("RoveComm");
+      return RoverName;
+    }
+  }
+  return RoverName;
 }
 
 void DisplayTest(LiquidCrystal_I2C lcd, MCP3008 adc)
