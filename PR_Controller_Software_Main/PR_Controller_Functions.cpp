@@ -18,12 +18,12 @@ void RoverWelcome(LiquidCrystal_I2C lcd)
 String RoverSelectMenu(LiquidCrystal_I2C lcd, MCP3008 adc, int SD3, int SD2)
 {
   int OptSelected = 0;
-  String RoverName = "Rover 2020";
+  String NetworkName = "Rover 2020";
   lcd.clear();
   lcd.setCursor(0,0);
   lcd.print("  Select Rover  ");
   lcd.setCursor(0,1);
-  lcd.print(":2020:");
+  lcd.print(":ICRS:");
   lcd.setCursor(9,1);
   lcd.print(":VALK:");
   lcd.setCursor(6,1);
@@ -38,7 +38,7 @@ String RoverSelectMenu(LiquidCrystal_I2C lcd, MCP3008 adc, int SD3, int SD2)
       lcd.print(" ");
       lcd.setCursor(6,1);
       lcd.print("*");
-      RoverName = "Rover 2020";
+      NetworkName = "Rover 2020";
       
     }
     if(digitalRead(SD3) == LOW)
@@ -47,13 +47,13 @@ String RoverSelectMenu(LiquidCrystal_I2C lcd, MCP3008 adc, int SD3, int SD2)
       lcd.print(" ");
       lcd.setCursor(8,1);
       lcd.print("*");
-      RoverName = "MRDT Valkyrie";
+      NetworkName = "MRDT Valkyrie";
     }
     if(adc.readADC(5) < 100)
     {
       lcd.clear();
       lcd.setCursor(0,0);
-      lcd.print(RoverName);
+      lcd.print(NetworkName);
       lcd.setCursor(0,1);
       lcd.print("Selected");
       delay(1500);
@@ -62,10 +62,10 @@ String RoverSelectMenu(LiquidCrystal_I2C lcd, MCP3008 adc, int SD3, int SD2)
       lcd.print("Connecting To");
       lcd.setCursor(4,1);
       lcd.print("RoveComm");
-      return RoverName;
+      return NetworkName;
     }
   }
-  return RoverName;
+  return NetworkName;
 }
 
 void DisplayTest(LiquidCrystal_I2C lcd, MCP3008 adc)
@@ -191,4 +191,30 @@ void tankDrive(int joyLeftY, int joyRightY, float joyLeftIdle, float joyRightIdl
   LeftRight_Vel[1] = rightVelocity;
   return;
 
+}
+
+void safeDrive(int joyLeftY, int joyRightY, int joyLeftX, int joyRightX, float joyLeftIdle, float joyRightIdle, float joyHalfMax, MCP3008 adc, int leftRight_Ve[])
+{
+  int vel_LY =  (((adc.readADC(joyLeftY) - joyLeftIdle)/joyHalfMax)*(1000));      //(-1000,1000)
+  int dir_RY = (((adc.readADC(joyRightY) - joyRightIdle)/joyHalfMax )*(1000));    //vel - velocity (left joystick, LY - left joy, Y value)
+
+  int vel_LX =  (((adc.readADC(joyLeftY) - joyLeftIdle)/joyHalfMax)*(1000));      //dir - direction
+  int dir_RX = (((adc.readADC(joyRightY) - joyRightIdle)/joyHalfMax )*(1000));    
+
+
+
+
+  
+
+  if((leftVelocity < 5)&&(leftVelocity > -5))         //USE THIS SECTION AFTER APPLYING FINAL VELOCITY VALUES
+    leftVelocity = 0;
+  if((rightVelocity < 5)&&(rightVelocity > -5))
+    rightVelocity = 0;
+  
+  if(leftVelocity > 1000)
+    leftVelocity = 1000;
+  if(rightVelocity > 1000)
+    rightVelocity = 1000;
+  
+  return;
 }

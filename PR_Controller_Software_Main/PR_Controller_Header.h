@@ -1,19 +1,31 @@
-
 #ifndef PR_Controller_Header
 #define PR_Controller_Header
 #include <LiquidCrystal_I2C.h>
 #include <MCP3008.h>
 
-void RoverWelcome(LiquidCrystal_I2C lcd);                             //Displays on Start-Up
+//Displays on Start-Up
+void RoverWelcome(LiquidCrystal_I2C lcd);
+                             
+//Menu start-up to select which rover to connect to. Returns string of network name.
+String RoverSelectMenu(LiquidCrystal_I2C lcd, MCP3008 adc,int SD3, int SD2);    
 
-String RoverSelectMenu(LiquidCrystal_I2C lcd, MCP3008 adc,int SD3, int SD2);     //Menu start-up to select which rover to connect to. Returns string of network name.
+//Displays all ADC Values on screen. ONLY FOR TESTING!
+void DisplayTest(LiquidCrystal_I2C lcd, MCP3008 adc);
 
-void DisplayTest(LiquidCrystal_I2C lcd, MCP3008 adc);                 //Displays all ADC Values on screen
+//Displays menu with 4 available sub-menus. Availalbe after network connection.
+//contains funtions that call additional testing variable from TIVAs
+void menu(LiquidCrystal_I2C lcd, MCP3008 adc,int SD3,int SD2);
 
-void menu(LiquidCrystal_I2C lcd, MCP3008 adc,int SD3,int SD2);        //Displays menu with 4 available sub-menus
+//idling display after connection to RoveComm. Displays network connection strength
+void MainDisplay(LiquidCrystal_I2C lcd, MCP3008 adc);
 
-void MainDisplay(LiquidCrystal_I2C lcd, MCP3008 adc);                  //idling display after connection to RoveComm
+//Returns matrix with left and right velocity values between (-1000,1000). Activated through on-board jumper.
+void tankDrive(int joyLeftY, int joyRightY, float joyLeftIdle, float joyRightIdle, float joyHalfMax, MCP3008 adc, int LeftRight_Ve[]);
 
-void tankDrive(int joyLeftY, int joyRightY, float joyLeftIdle, float joyRightIdle, float joyHalfMax, MCP3008 adc, int LeftRight_Ve[]); //Returns matrix with left and right velocity values
+//Returns matrix with left and right velocity values between (-1000,1000). Activated through on-baord jumper.
+//Auto activated by default when no jumper is dectected. 
+//Modifies joystick values to drive within a controlled fashion safe for the Rover.
+//LeftJoystick = Speed    RightJoystick = Direction
+void safeDrive(int joyLeftY, int joyRightY, int joyLeftX, int joyRightX, float joyLeftIdle, float joyRightIdle, float joyHalfMax, MCP3008 adc, int leftRight_Ve[]);
 
 #endif

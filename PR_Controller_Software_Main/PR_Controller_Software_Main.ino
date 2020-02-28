@@ -46,6 +46,9 @@ int SD2 = 9;
 int lcdColumns = 16;
 int lcdRows = 2;
 LiquidCrystal_I2C lcd(0x38,2,1,0,4,5,6,7,3,POSITIVE);
+//NOTE: 0x38 is the I2C address for the specific PCF chip on this board, use an
+//      I2C address scanner for future iterations to determine which address is 
+//      appropriate for I2C bus. I2C scanner in folder "Test Code"
 
 void setup() {
   Serial.begin(115200);
@@ -99,7 +102,7 @@ void loop() {
     
   if(adc.readADC(TANK) > 100)
   {
-   RoveComm.write(RC_DRIVEBOARD_DRIVELEFTRIGHT_DATAID,RC_DRIVEBOARD_DRIVELEFTRIGHT_DATACOUNT,LEFTRIGHT_VEL);
+   RoveComm.write(RC_DRIVEBOARD_DRIVELEFTRIGHT_DATAID,RC_DRIVEBOARD_DRIVELEFTRIGHT_DATACOUNT,LEFTRIGHT_VEL);  //currently without static IP
   }
 
   lcd.clear();
