@@ -10,7 +10,6 @@
 #include "RoveCommPacket.h"
 
 #ifndef STASSID
-#endif
 
 RoveCommWifiUdp RoveComm;
 
@@ -118,3 +117,5 @@ void loop() {
   return;
 
 }
+
+#endif

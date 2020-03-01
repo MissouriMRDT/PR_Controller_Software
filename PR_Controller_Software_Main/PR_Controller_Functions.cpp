@@ -195,13 +195,15 @@ void tankDrive(int joyLeftY, int joyRightY, float joyLeftIdle, float joyRightIdl
 
 void safeDrive(int joyLeftY, int joyRightY, int joyLeftX, int joyRightX, float joyLeftIdle, float joyRightIdle, float joyHalfMax, MCP3008 adc, int leftRight_Ve[])
 {
+  int leftVelocity = 0;
+  int rightVelocity = 0;
   int vel_LY =  (((adc.readADC(joyLeftY) - joyLeftIdle)/joyHalfMax)*(1000));      //(-1000,1000)
   int dir_RY = (((adc.readADC(joyRightY) - joyRightIdle)/joyHalfMax )*(1000));    //vel - velocity (left joystick, LY - left joy, Y value)
 
-  int vel_LX =  (((adc.readADC(joyLeftY) - joyLeftIdle)/joyHalfMax)*(1000));      //dir - direction
-  int dir_RX = (((adc.readADC(joyRightY) - joyRightIdle)/joyHalfMax )*(1000));    
+  int vel_LX =  (((adc.readADC(joyLeftX) - joyLeftIdle)/joyHalfMax)*(1000));      //dir - direction
+  int dir_RX = (((adc.readADC(joyRightX) - joyRightIdle)/joyHalfMax )*(1000));    
 
-
+  
 
 
   
