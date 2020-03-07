@@ -36,6 +36,7 @@ MCP3008 adc(CLK,Din,Dout,CS);
 //Drivebaord Controlls
 double LEFT_VEL;      //(-1000,1000)
 double RIGHT_VEL;
+int MAX_SPEED = 1000;
 
 //Define ESP SD Ports (read as digitalRead 9/10)
 int SD3 = 10;
@@ -70,7 +71,7 @@ void setup() {
   IPAddress gateway(192,168,1,1);
   IPAddress subnet(255,255,255,0);
   WiFi.config(ip,gateway,subnet);
-  WiFi.begin(STASSID);
+ /* WiFi.begin(STASSID);
   Serial.print("Connecting to Network");
   while(WiFi.status() != WL_CONNECTED){
     Serial.print(".");
@@ -79,7 +80,7 @@ void setup() {
   Serial.println();
   Serial.print("Connected! IP address: ");
   Serial.println(WiFi.localIP());
-
+*/
   lcd.clear();
 
 }
@@ -97,7 +98,8 @@ void loop() {
 
   //Tank Drive for Valkyrie (2019)
   int LEFTRIGHT_VEL[2];
-  tankDrive(JOY_LEFT_Y, JOY_RIGHT_Y, JOY_LEFT_IDLE, JOY_RIGHT_IDLE, JOY_HALF_MAX, adc,LEFTRIGHT_VEL);
+  maxSpeed(adc,MAX_SPEED,SD2);
+  tankDrive(JOY_LEFT_Y, JOY_RIGHT_Y, JOY_LEFT_IDLE, JOY_RIGHT_IDLE, JOY_HALF_MAX, adc,LEFTRIGHT_VEL,MAX_SPEED);
     
   if(adc.readADC(TANK) > 100)
   {
@@ -113,7 +115,8 @@ void loop() {
   lcd.setCursor(0,1);
   lcd.print("RV " + String(LEFTRIGHT_VEL[1]));
   lcd.setCursor(8,1);
-  delay(100);
+  lcd.print("MAX:" + String(MAX_SPEED));
+  delay(50);
   return;
 
 }

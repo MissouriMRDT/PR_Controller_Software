@@ -99,7 +99,7 @@ void MainDisplay(LiquidCrystal_I2C lcd, MCP3008 adc)
 
 void menu(LiquidCrystal_I2C lcd, MCP3008 adc, int SD3, int SD2)
 {
-  if(digitalRead(D4) == LOW)
+  if(adc.readADC(5) == LOW)
   {
     int curSel = 0;               //tracks current menu selecttion. 0-BR 1-BL 2-TR 3-TL
     int cursorX1 = 8;              //Moves cursor around LCD
@@ -167,15 +167,17 @@ void menu(LiquidCrystal_I2C lcd, MCP3008 adc, int SD3, int SD2)
       if((adc.readADC(5) < 100)&&(curSel == 0)){
         exitMenu = true;
         lcd.clear();
+        delay(200);
       }
     }
   }
   return;
 }
-void tankDrive(int joyLeftY, int joyRightY, float joyLeftIdle, float joyRightIdle, float joyHalfMax, MCP3008 adc,int LeftRight_Vel[])
+void tankDrive(int joyLeftY, int joyRightY, float joyLeftIdle, float joyRightIdle, float joyHalfMax, MCP3008 adc,int LeftRight_Vel[],int MAX_SPEED)
 {
-  int leftVelocity =  (((adc.readADC(joyLeftY) - joyLeftIdle)/joyHalfMax)*(1000));      //(-1000,1000)
-  int rightVelocity = (((adc.readADC(joyRightY) - joyRightIdle)/joyHalfMax )*(1000));
+  
+  int leftVelocity =  (((adc.readADC(joyLeftY) - joyLeftIdle)/joyHalfMax)*(MAX_SPEED));      //(-1000,1000)when max speed is 1000
+  int rightVelocity = (((adc.readADC(joyRightY) - joyRightIdle)/joyHalfMax )*(MAX_SPEED));
 
   if((leftVelocity < 5)&&(leftVelocity > -5))
     leftVelocity = 0;
@@ -218,5 +220,20 @@ void safeDrive(int joyLeftY, int joyRightY, int joyLeftX, int joyRightX, float j
   if(rightVelocity > 1000)
     rightVelocity = 1000;
   
+  return;
+}
+
+void maxSpeed(MCP3008 adc, int & MAX_SPEED, int SD2)
+{
+  if(digitalRead(SD2) == LOW)
+  {
+    if((MAX_SPEED - 100) > 0)
+      MAX_SPEED = (MAX_SPEED - 100);
+  }
+  if(digitalRead(D4) == LOW)
+  {
+    if((MAX_SPEED  + 100) <= 1000)
+      MAX_SPEED = (MAX_SPEED + 100);
+  }
   return;
 }
