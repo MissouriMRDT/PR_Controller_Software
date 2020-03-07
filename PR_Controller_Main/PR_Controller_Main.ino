@@ -4,7 +4,7 @@
 #include <LiquidCrystal_I2C.h>
 #include <ESP8266WiFi.h>
 
-#include "PR_Controller_Header.h"
+#include "PR_Controller.h"
 #include "RoveComm.h"
 #include "RoveCommManifest.h"
 #include "RoveCommPacket.h"
@@ -69,7 +69,7 @@ void setup() {
 
 void loop() {
   //MainDisplay(lcd,adc);
-  DisplayTest(lcd,adc);
+  //DisplayTest(lcd,adc);
   menu(lcd,adc,SD3,SD2);
   
   if(WiFi.status() == WL_CONNECTED)
@@ -93,7 +93,7 @@ void loop() {
     RoveComm.write(RC_DRIVEBOARD_DRIVELEFTRIGHT_DATAID,RC_DRIVEBOARD_DRIVELEFTRIGHT_DATACOUNT,LEFTRIGHT_VEL);  //currently without static IP
   }
   
-/*
+
   lcd.clear();
   lcd.setCursor(0,0);
   lcd.print("LV " + String(LEFTRIGHT_VEL[0]));
@@ -105,7 +105,7 @@ void loop() {
   lcd.setCursor(8,1);
   lcd.print("MAX:" + String(MAX_SPEED));
   delay(50);
-  */
+  
   return;
 
 }

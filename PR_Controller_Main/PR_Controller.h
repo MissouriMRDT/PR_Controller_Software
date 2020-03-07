@@ -1,5 +1,5 @@
-#ifndef PR_Controller_Header
-#define PR_Controller_Header
+#ifndef PR_Controller
+#define PR_Controller
 #include <LiquidCrystal_I2C.h>
 #include <MCP3008.h>
 

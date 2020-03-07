@@ -1,4 +1,4 @@
-#include "PR_Controller_Header.h"
+#include "PR_Controller.h"
 #include <ESP8266WiFi.h>
 
 void RoverWelcome(LiquidCrystal_I2C lcd)
@@ -210,29 +210,29 @@ void safeDrive(MCP3008 adc,int LeftRight_Vel[], int MAX_SPEED)
   
   ////////////////////////////////////ADJUST VELOCITY TO MATCH GIVEN DIRECTION////////////////////////////////////
 
-  if((adc.readADC(JOY_RIGHT_X)) > (JOY_RIGHT_X_IDLE + 5)) //Directional joystick turning left (+5 is used for buffer)
+  if(leftVelocity > 50)
   {
-    leftVelocity = rightVelocity - (dir_RX * .5);
+    if((adc.readADC(JOY_RIGHT_X)) > (JOY_RIGHT_X_IDLE + 5)) //Directional joystick turning left (+5 is used for buffer)
+    {
+      leftVelocity = rightVelocity - (dir_RX * .5);
+    }
+    if((adc.readADC(JOY_RIGHT_X)) < (JOY_RIGHT_X_IDLE - 5)) //Directional joystick turning right (-5 is used for buffer)
+    {
+      rightVelocity = leftVelocity - (dir_RX * -.5);
+    }
   }
-  if((adc.readADC(JOY_RIGHT_X)) < (JOY_RIGHT_X_IDLE - 5)) //Directional joystick turning right (-5 is used for buffer)
-  {
-    rightVelocity = leftVelocity - (dir_RX * -.5);
-  }
   
   
-
-
-  
-
-  if((leftVelocity < 5)&&(leftVelocity > -5))         //USE THIS SECTION AFTER APPLYING FINAL VELOCITY VALUES
+   
+  if(leftVelocity < 5)         //USE THIS SECTION AFTER APPLYING FINAL VELOCITY VALUES
     leftVelocity = 0;
-  if((rightVelocity < 5)&&(rightVelocity > -5))
+  if(rightVelocity < 5)
     rightVelocity = 0;
   
-  if(leftVelocity > 1000)
-    leftVelocity = 1000;
-  if(rightVelocity > 1000)
-    rightVelocity = 1000;
+  if(leftVelocity > MAX_SPEED)
+    leftVelocity = MAX_SPEED;
+  if(rightVelocity > MAX_SPEED)
+    rightVelocity = MAX_SPEED;
 
   LeftRight_Vel[0] = leftVelocity;
   LeftRight_Vel[1] = rightVelocity;
