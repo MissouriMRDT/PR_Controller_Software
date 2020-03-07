@@ -74,13 +74,13 @@ void DisplayTest(LiquidCrystal_I2C lcd, MCP3008 adc)
   double RIGHT_VEL = (((adc.readADC(2) - 502.0)/502)*(1000));
   lcd.clear();
   lcd.setCursor(0,0);
-  lcd.print("LV " + String(LEFT_VEL));
+  lcd.print("LX " + String(adc.readADC(1)));
   lcd.setCursor(8,0);
   lcd.print("LY " + String(adc.readADC(0)));
   lcd.setCursor(0,1);
-  lcd.print("RV " + String(RIGHT_VEL));
+  lcd.print("RX " + String(adc.readADC(3)));
   lcd.setCursor(8,1);
-  lcd.print("XY " + String(adc.readADC(2)));
+  lcd.print("RY " + String(adc.readADC(2)));
   delay(100);
   return;
 }
@@ -173,21 +173,21 @@ void menu(LiquidCrystal_I2C lcd, MCP3008 adc, int SD3, int SD2)
   }
   return;
 }
-void tankDrive(int joyLeftY, int joyRightY, float joyLeftIdle, float joyRightIdle, float joyHalfMax, MCP3008 adc,int LeftRight_Vel[],int MAX_SPEED)
+void tankDrive(MCP3008 adc,int LeftRight_Vel[],int MAX_SPEED)
 {
   
-  int leftVelocity =  (((adc.readADC(joyLeftY) - joyLeftIdle)/joyHalfMax)*(MAX_SPEED));      //(-1000,1000)when max speed is 1000
-  int rightVelocity = (((adc.readADC(joyRightY) - joyRightIdle)/joyHalfMax )*(MAX_SPEED));
+  int leftVelocity =  (((adc.readADC(JOY_LEFT_Y) - JOY_LEFT_Y_IDLE)/JOY_HALF_MAX)*(MAX_SPEED));      //(-1000,1000)when max speed is 1000
+  int rightVelocity = (((adc.readADC(JOY_RIGHT_Y) - JOY_RIGHT_Y_IDLE)/JOY_HALF_MAX)*(MAX_SPEED));
 
   if((leftVelocity < 5)&&(leftVelocity > -5))
     leftVelocity = 0;
   if((rightVelocity < 5)&&(rightVelocity > -5))
     rightVelocity = 0;
   
-  if(leftVelocity > 1000)
-    leftVelocity = 1000;
-  if(rightVelocity > 1000)
-    rightVelocity = 1000;
+  if(leftVelocity > MAX_SPEED)
+    leftVelocity = MAX_SPEED;
+  if(rightVelocity > MAX_SPEED)
+    rightVelocity = MAX_SPEED;
 
   LeftRight_Vel[0] = leftVelocity;
   LeftRight_Vel[1] = rightVelocity;
@@ -195,16 +195,30 @@ void tankDrive(int joyLeftY, int joyRightY, float joyLeftIdle, float joyRightIdl
 
 }
 
-void safeDrive(int joyLeftY, int joyRightY, int joyLeftX, int joyRightX, float joyLeftIdle, float joyRightIdle, float joyHalfMax, MCP3008 adc, int leftRight_Ve[])
+void safeDrive(MCP3008 adc,int LeftRight_Vel[], int MAX_SPEED)
 {
+  
+  ////////////////////////////////////DETERMINE MAX VELOCITY AND DIRECTION////////////////////////////////////
   int leftVelocity = 0;
   int rightVelocity = 0;
-  int vel_LY =  (((adc.readADC(joyLeftY) - joyLeftIdle)/joyHalfMax)*(1000));      //(-1000,1000)
-  int dir_RY = (((adc.readADC(joyRightY) - joyRightIdle)/joyHalfMax )*(1000));    //vel - velocity (left joystick, LY - left joy, Y value)
+  
+  leftVelocity =  (((adc.readADC(JOY_LEFT_Y) - JOY_LEFT_Y_IDLE)/JOY_HALF_MAX)*(MAX_SPEED));      //(-1000,1000) when MAX_SPEED is 1000
+  rightVelocity = leftVelocity;  //match velocity across motors
+  
+  int dir_RY = (((adc.readADC(JOY_RIGHT_Y) - JOY_RIGHT_Y_IDLE)/JOY_HALF_MAX)*(MAX_SPEED));   
+  int dir_RX = (((adc.readADC(JOY_RIGHT_X) - JOY_RIGHT_X_IDLE)/JOY_HALF_MAX)*(MAX_SPEED));    
+  
+  ////////////////////////////////////ADJUST VELOCITY TO MATCH GIVEN DIRECTION////////////////////////////////////
 
-  int vel_LX =  (((adc.readADC(joyLeftX) - joyLeftIdle)/joyHalfMax)*(1000));      //dir - direction
-  int dir_RX = (((adc.readADC(joyRightX) - joyRightIdle)/joyHalfMax )*(1000));    
-
+  if((adc.readADC(JOY_RIGHT_X)) > (JOY_RIGHT_X_IDLE + 5)) //Directional joystick turning left (+5 is used for buffer)
+  {
+    leftVelocity = rightVelocity - (dir_RX * .5);
+  }
+  if((adc.readADC(JOY_RIGHT_X)) < (JOY_RIGHT_X_IDLE - 5)) //Directional joystick turning right (-5 is used for buffer)
+  {
+    rightVelocity = leftVelocity - (dir_RX * -.5);
+  }
+  
   
 
 
@@ -219,6 +233,9 @@ void safeDrive(int joyLeftY, int joyRightY, int joyLeftX, int joyRightX, float j
     leftVelocity = 1000;
   if(rightVelocity > 1000)
     rightVelocity = 1000;
+
+  LeftRight_Vel[0] = leftVelocity;
+  LeftRight_Vel[1] = rightVelocity;
   
   return;
 }
@@ -229,11 +246,13 @@ void maxSpeed(MCP3008 adc, int & MAX_SPEED, int SD2)
   {
     if((MAX_SPEED - 100) > 0)
       MAX_SPEED = (MAX_SPEED - 100);
+    delay(20);
   }
   if(digitalRead(D4) == LOW)
   {
     if((MAX_SPEED  + 100) <= 1000)
       MAX_SPEED = (MAX_SPEED + 100);
+    delay(20);
   }
   return;
 }

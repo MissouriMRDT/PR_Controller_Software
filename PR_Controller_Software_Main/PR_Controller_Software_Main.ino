@@ -13,25 +13,7 @@
 
 RoveCommWifiUdp RoveComm;
 
-
-//ADC Setup
-#define CLK D5
-#define Dout D6
-#define Din D7
-#define CS D8
-#define TANK 6
 MCP3008 adc(CLK,Din,Dout,CS);
-
-//Joystick Values
-#define JOY_LEFT_Y 0  //adc.readADC(0) to read value 
-#define JOY_LEFT_X 1  //Max JOY value is 1023
-#define JOY_RIGHT_Y 2
-#define JOY_RIGHT_X 3
-
-#define JOY_LEFT_IDLE 504.0 //Idling ADC value of Joystick
-#define JOY_RIGHT_IDLE 502.0
-#define JOY_HALF_MAX 511.5
-#define MAX_JOY_VALUE 1023
 
 //Drivebaord Controlls
 double LEFT_VEL;      //(-1000,1000)
@@ -87,7 +69,7 @@ void setup() {
 
 void loop() {
   //MainDisplay(lcd,adc);
-  //DisplayTest(lcd,adc);
+  DisplayTest(lcd,adc);
   menu(lcd,adc,SD3,SD2);
   
   if(WiFi.status() == WL_CONNECTED)
@@ -96,16 +78,22 @@ void loop() {
     digitalWrite(D0,LOW);
 
 
-  //Tank Drive for Valkyrie (2019)
+  //Tank Drive and Safe Drive
   int LEFTRIGHT_VEL[2];
   maxSpeed(adc,MAX_SPEED,SD2);
-  tankDrive(JOY_LEFT_Y, JOY_RIGHT_Y, JOY_LEFT_IDLE, JOY_RIGHT_IDLE, JOY_HALF_MAX, adc,LEFTRIGHT_VEL,MAX_SPEED);
     
   if(adc.readADC(TANK) > 100)
   {
+   tankDrive(adc,LEFTRIGHT_VEL,MAX_SPEED);
    RoveComm.write(RC_DRIVEBOARD_DRIVELEFTRIGHT_DATAID,RC_DRIVEBOARD_DRIVELEFTRIGHT_DATACOUNT,LEFTRIGHT_VEL);  //currently without static IP
   }
-
+  else
+  {
+    safeDrive(adc,LEFTRIGHT_VEL,MAX_SPEED);
+    RoveComm.write(RC_DRIVEBOARD_DRIVELEFTRIGHT_DATAID,RC_DRIVEBOARD_DRIVELEFTRIGHT_DATACOUNT,LEFTRIGHT_VEL);  //currently without static IP
+  }
+  
+/*
   lcd.clear();
   lcd.setCursor(0,0);
   lcd.print("LV " + String(LEFTRIGHT_VEL[0]));
@@ -117,6 +105,7 @@ void loop() {
   lcd.setCursor(8,1);
   lcd.print("MAX:" + String(MAX_SPEED));
   delay(50);
+  */
   return;
 
 }

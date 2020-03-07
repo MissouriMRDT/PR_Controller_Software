@@ -3,6 +3,27 @@
 #include <LiquidCrystal_I2C.h>
 #include <MCP3008.h>
 
+//ADC Setup
+#define CLK D5
+#define Dout D6
+#define Din D7
+#define CS D8
+#define TANK 6
+
+//Joystick Values
+#define JOY_LEFT_Y 0  //adc.readADC(0) to read value 
+#define JOY_LEFT_X 1  //Max JOY value is 1023
+#define JOY_RIGHT_Y 2
+#define JOY_RIGHT_X 3
+
+#define JOY_LEFT_Y_IDLE 504.0 //Idling ADC value of Joystick
+#define JOY_RIGHT_Y_IDLE 502.0
+#define JOY_HALF_MAX 511.5
+#define MAX_JOY_VALUE 1023
+#define JOY_RIGHT_X_IDLE 513.0
+#define JOY_LEFT_X_IDLE 499.0
+
+
 //Displays on Start-Up
 void RoverWelcome(LiquidCrystal_I2C lcd);
                              
@@ -20,13 +41,13 @@ void menu(LiquidCrystal_I2C lcd, MCP3008 adc,int SD3,int SD2);
 void MainDisplay(LiquidCrystal_I2C lcd, MCP3008 adc);
 
 //Returns matrix with left and right velocity values between (-1000,1000). Activated through on-board jumper.
-void tankDrive(int joyLeftY, int joyRightY, float joyLeftIdle, float joyRightIdle, float joyHalfMax, MCP3008 adc, int LeftRight_Ve[],int MAX_SPEED);
+void tankDrive(MCP3008 adc, int LeftRight_Vel[],int MAX_SPEED);
 
 //Returns matrix with left and right velocity values between (-1000,1000). Activated through on-baord jumper.
 //Auto activated by default when no jumper is dectected. 
 //Modifies joystick values to drive within a controlled fashion safe for the Rover.
 //LeftJoystick = Speed    RightJoystick = Direction
-void safeDrive(int joyLeftY, int joyRightY, int joyLeftX, int joyRightX, float joyLeftIdle, float joyRightIdle, float joyHalfMax, MCP3008 adc, int leftRight_Ve[]);
+void safeDrive(MCP3008 adc,int LeftRight_Vel[], int MAX_SPEED);
 
 //adjusts max speed value to be passed to TankDrive and SafeDrive
 void maxSpeed(MCP3008 adc, int & MAX_SPEED, int SD2);
