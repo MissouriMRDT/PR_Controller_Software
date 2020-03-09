@@ -53,12 +53,12 @@ void setup() {
   //WiFi Setup
   String NET_NAME = RoverSelectMenu(lcd,adc,SD3,SD2);
   //#define STAPSK "test1234"     //use only if network has password
-  #define STASSID NET_NAME
+  #define STASSID "MRDT 2020"
   IPAddress ip(192,168,1,141);
   IPAddress gateway(192,168,1,1);
   IPAddress subnet(255,255,255,0);
   WiFi.config(ip,gateway,subnet); 
-  WiFi.begin("Ligma","adidas11");
+  WiFi.begin(STASSID);
   Serial.print("Connecting to Network ");
   Serial.print(WiFi.SSID());
   while(WiFi.status() != WL_CONNECTED){
