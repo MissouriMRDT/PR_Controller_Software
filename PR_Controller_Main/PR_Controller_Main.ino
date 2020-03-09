@@ -15,16 +15,15 @@ RoveCommWifiUdp RoveComm;
 
 MCP3008 adc(CLK,Din,Dout,CS);
 
-//Drivebaord Controlls
-double LEFT_VEL;      //(-1000,1000)
-double RIGHT_VEL;
+/////////DRIVEBOARD CONTROLS/////////
 int MAX_SPEED = 1000;
+int LEFTRIGHT_VEL[2];
 
-//Define ESP SD Ports (read as digitalRead 9/10)
-int SD3 = 10;
+/////////ESP SD PORTS/////////
+int SD3 = 10;         //use as digitalRead(SD3)
 int SD2 = 9;
 
-//LCD Setup
+/////////LCD INITIZALIZATION/////////
 int lcdColumns = 16;
 int lcdRows = 2;
 LiquidCrystal_I2C lcd(0x38,2,1,0,4,5,6,7,3,POSITIVE);
@@ -32,10 +31,15 @@ LiquidCrystal_I2C lcd(0x38,2,1,0,4,5,6,7,3,POSITIVE);
 //      I2C address scanner for future iterations to determine which address is 
 //      appropriate for I2C bus. I2C scanner in folder "Test Code"
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 void setup() {
   Serial.begin(115200);
+  LEFTRIGHT_VEL[0] = 0;
+  LEFTRIGHT_VEL[1] = 0;
   
-  //LCD and PIN Setup
+/////////LCD AND PIN SETUP/////////
   lcd.begin(lcdColumns,lcdRows);
   pinMode(D0,OUTPUT);
   pinMode(D3,INPUT);
@@ -48,12 +52,12 @@ void setup() {
   //WiFi Setup
   String NET_NAME = RoverSelectMenu(lcd,adc,SD3,SD2);
   #define STASSID NET_NAME
-  #define STAPSK "test1234"
+  //#define STAPSK "test1234"     //use only if network has password
   IPAddress ip(192,168,1,141);
   IPAddress gateway(192,168,1,1);
   IPAddress subnet(255,255,255,0);
   WiFi.config(ip,gateway,subnet);
- /* WiFi.begin(STASSID);
+  WiFi.begin(STASSID);
   Serial.print("Connecting to Network");
   while(WiFi.status() != WL_CONNECTED){
     Serial.print(".");
@@ -62,10 +66,13 @@ void setup() {
   Serial.println();
   Serial.print("Connected! IP address: ");
   Serial.println(WiFi.localIP());
-*/
+
   lcd.clear();
 
 }
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void loop() {
   //MainDisplay(lcd,adc);
@@ -79,7 +86,6 @@ void loop() {
 
 
   //Tank Drive and Safe Drive
-  int LEFTRIGHT_VEL[2];
   maxSpeed(adc,MAX_SPEED,SD2);
     
   if(adc.readADC(TANK) > 100)

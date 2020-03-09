@@ -85,7 +85,7 @@ void DisplayTest(LiquidCrystal_I2C lcd, MCP3008 adc)
   return;
 }
 
-void MainDisplay(LiquidCrystal_I2C lcd, MCP3008 adc)
+void MainDisplay(LiquidCrystal_I2C lcd, MCP3008 adc, int LEFTRIGHT_VEL[])
 {
   lcd.setCursor(0,0);
   lcd.print("STR:");
@@ -95,6 +95,12 @@ void MainDisplay(LiquidCrystal_I2C lcd, MCP3008 adc)
     lcd.print("ON ");
   else
     lcd.print("OFF");
+
+  lcd.setCursor(0,1);
+  lcd.print("LV: " + LEFTRIGHT_VEL[0]);
+  lcd.setCursor(8,1);
+  lcd.print("RV: " + LEFTRIGHT_VEL[1]);
+  return;
 }
 
 void menu(LiquidCrystal_I2C lcd, MCP3008 adc, int SD3, int SD2)
@@ -222,9 +228,9 @@ void safeDrive(MCP3008 adc,int LeftRight_Vel[], int MAX_SPEED)
     }
   }
   
-  
+  ////////////////////////////////////ADJUST VELOCITY AND APPLY SAFEGUARDS////////////////////////////////////
    
-  if(leftVelocity < 5)         //USE THIS SECTION AFTER APPLYING FINAL VELOCITY VALUES
+  if(leftVelocity < 5)
     leftVelocity = 0;
   if(rightVelocity < 5)
     rightVelocity = 0;

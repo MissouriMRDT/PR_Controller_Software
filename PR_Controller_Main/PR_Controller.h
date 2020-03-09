@@ -3,14 +3,14 @@
 #include <LiquidCrystal_I2C.h>
 #include <MCP3008.h>
 
-//ADC Setup
+/////////ADC SETUP/////////
 #define CLK D5
 #define Dout D6
 #define Din D7
 #define CS D8
 #define TANK 6
 
-//Joystick Values
+/////////JOYSTICK VALUES/////////
 #define JOY_LEFT_Y 0  //adc.readADC(0) to read value 
 #define JOY_LEFT_X 1  //Max JOY value is 1023
 #define JOY_RIGHT_Y 2
@@ -38,7 +38,7 @@ void DisplayTest(LiquidCrystal_I2C lcd, MCP3008 adc);
 void menu(LiquidCrystal_I2C lcd, MCP3008 adc,int SD3,int SD2);
 
 //idling display after connection to RoveComm. Displays network connection strength
-void MainDisplay(LiquidCrystal_I2C lcd, MCP3008 adc);
+void MainDisplay(LiquidCrystal_I2C lcd, MCP3008 adc, int LEFTRIGHT_VEL[]);
 
 //Returns matrix with left and right velocity values between (-1000,1000). Activated through on-board jumper.
 void tankDrive(MCP3008 adc, int LeftRight_Vel[],int MAX_SPEED);
