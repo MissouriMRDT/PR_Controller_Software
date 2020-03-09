@@ -35,7 +35,7 @@ void DisplayTest(LiquidCrystal_I2C lcd, MCP3008 adc);
 
 //Displays menu with 4 available sub-menus. Availalbe after network connection.
 //contains funtions that call additional testing variable from TIVAs
-void menu(LiquidCrystal_I2C lcd, MCP3008 adc,int SD3,int SD2);
+void menu(LiquidCrystal_I2C lcd, MCP3008 adc,int SD3,int SD2, bool &backlight);
 
 //idling display after connection to RoveComm. Displays network connection strength
 void MainDisplay(LiquidCrystal_I2C lcd, MCP3008 adc, int LEFTRIGHT_VEL[]);
@@ -51,5 +51,8 @@ void safeDrive(MCP3008 adc,int LeftRight_Vel[], int MAX_SPEED);
 
 //adjusts max speed value to be passed to TankDrive and SafeDrive
 void maxSpeed(MCP3008 adc, int & MAX_SPEED, int SD2);
+
+//MENU FUNCTION: toggles LCD backlight normal operating mode
+bool Menu_Backlight(MCP3008 adc,LiquidCrystal_I2C lcd, int SD2);
 
 #endif

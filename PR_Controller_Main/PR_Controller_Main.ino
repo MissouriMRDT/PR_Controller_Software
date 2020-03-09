@@ -26,6 +26,7 @@ int SD2 = 9;
 /////////LCD INITIZALIZATION/////////
 int lcdColumns = 16;
 int lcdRows = 2;
+bool lcdBacklight = false;
 LiquidCrystal_I2C lcd(0x38,2,1,0,4,5,6,7,3,POSITIVE);
 //NOTE: 0x38 is the I2C address for the specific PCF chip on this board, use an
 //      I2C address scanner for future iterations to determine which address is 
@@ -51,14 +52,15 @@ void setup() {
   
   //WiFi Setup
   String NET_NAME = RoverSelectMenu(lcd,adc,SD3,SD2);
-  #define STASSID NET_NAME
   //#define STAPSK "test1234"     //use only if network has password
+  #define STASSID NET_NAME
   IPAddress ip(192,168,1,141);
   IPAddress gateway(192,168,1,1);
   IPAddress subnet(255,255,255,0);
-  WiFi.config(ip,gateway,subnet);
-  WiFi.begin(STASSID);
-  Serial.print("Connecting to Network");
+  WiFi.config(ip,gateway,subnet); 
+  WiFi.begin("Ligma","adidas11");
+  Serial.print("Connecting to Network ");
+  Serial.print(WiFi.SSID());
   while(WiFi.status() != WL_CONNECTED){
     Serial.print(".");
     delay(500);
@@ -66,7 +68,6 @@ void setup() {
   Serial.println();
   Serial.print("Connected! IP address: ");
   Serial.println(WiFi.localIP());
-
   lcd.clear();
 
 }
@@ -77,7 +78,12 @@ void setup() {
 void loop() {
   //MainDisplay(lcd,adc);
   //DisplayTest(lcd,adc);
-  menu(lcd,adc,SD3,SD2);
+  menu(lcd,adc,SD3,SD2,lcdBacklight);
+
+  if(lcdBacklight == true)
+    lcd.backlight();
+  else
+    lcd.noBacklight();
   
   if(WiFi.status() == WL_CONNECTED)
     digitalWrite(D0,HIGH);

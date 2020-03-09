@@ -18,7 +18,7 @@ void RoverWelcome(LiquidCrystal_I2C lcd)
 String RoverSelectMenu(LiquidCrystal_I2C lcd, MCP3008 adc, int SD3, int SD2)
 {
   int OptSelected = 0;
-  String NetworkName = "Rover 2020";
+  String NetworkName = "MRDT 2020";
   lcd.clear();
   lcd.setCursor(0,0);
   lcd.print("  Select Rover  ");
@@ -103,10 +103,12 @@ void MainDisplay(LiquidCrystal_I2C lcd, MCP3008 adc, int LEFTRIGHT_VEL[])
   return;
 }
 
-void menu(LiquidCrystal_I2C lcd, MCP3008 adc, int SD3, int SD2)
+void menu(LiquidCrystal_I2C lcd, MCP3008 adc, int SD3, int SD2, bool &backlight)
 {
   if(adc.readADC(5) == LOW)
   {
+    lcd.backlight();
+    delay(200);
     int curSel = 0;               //tracks current menu selecttion. 0-BR 1-BL 2-TR 3-TL
     int cursorX1 = 8;              //Moves cursor around LCD
     int cursorX2 = 6;
@@ -116,7 +118,7 @@ void menu(LiquidCrystal_I2C lcd, MCP3008 adc, int SD3, int SD2)
     int cursor_CurY;
     bool exitMenu = false;
     String optionTL = ":OPT4:";
-    String optionTR = ":OPT3:";
+    String optionTR = ":LGHT:";
     String optionBL = ":OPT2:";
     String optionBR = ":EXIT:";
     lcd.clear();
@@ -174,6 +176,11 @@ void menu(LiquidCrystal_I2C lcd, MCP3008 adc, int SD3, int SD2)
         exitMenu = true;
         lcd.clear();
         delay(200);
+      }
+      if((adc.readADC(5) < 100)&&(curSel == 2))
+      {
+        backlight = Menu_Backlight(adc,lcd,SD2);
+        exitMenu = true;
       }
     }
   }
@@ -261,4 +268,36 @@ void maxSpeed(MCP3008 adc, int & MAX_SPEED, int SD2)
     delay(20);
   }
   return;
+}
+
+bool Menu_Backlight(MCP3008 adc,LiquidCrystal_I2C lcd, int SD2)
+{
+    bool exitMenu = false;
+    bool backLight = false;
+    delay(250);
+    lcd.clear();
+    lcd.setCursor(0,0);
+    lcd.print("LCD BCK_LGHT:OFF");
+    lcd.setCursor(0,1);
+    lcd.print("R_JOY TO EXIT");
+    while(exitMenu == false)
+    {
+      yield();
+      if(digitalRead(D4) == LOW)
+      {
+        lcd.setCursor(13,0);
+        lcd.print("ON ");
+        backLight = true;
+      }
+      if(digitalRead(SD2) == LOW)
+      {
+        lcd.setCursor(13,0);
+        lcd.print("OFF");
+        backLight = false;
+      }
+      if(adc.readADC(5) < 100)
+        exitMenu = true;
+    }
+    delay(200);
+    return backLight;
 }
