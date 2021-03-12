@@ -1,3 +1,1 @@
-~Arudino libraries must be installed in the local Arduino libraries folder on the computer used for uploading, usually located in the documents folder.
-
 ~The board ESP8266 must be installed. See (http://arduino-er.blogspot.com/2015/11/install-esp8266-board-to-arduino-ide.html) for instructions. 
