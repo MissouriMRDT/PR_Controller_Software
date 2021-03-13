@@ -13,8 +13,9 @@
 //  DRIVEBOARD CONTROLS
 ////////////////////////////
 const int MAX_SPEED = 1000;
-uint8_t wheelSpeeds[4];     //FL,RL,FR,RR
-uint8_t wheelAngles[4];     //FL,RL,FR,RR
+//FL,RL,FR,RR
+uint16_t wheelSpeeds[4] = {1000,1000,500,1000};  
+uint8_t wheelAngles[4] = {180,180,180,180};
 
 ////////////////////////////
 //  LCD INITIALIZATION
@@ -116,6 +117,28 @@ B00000,
 B00000,
 B00000,
 B00000 
+};
+
+byte leftMarker[] = {
+  B00000,
+  B10000,
+  B10001,
+  B10000,
+  B10001,
+  B11100,
+  B00000,
+  B00000
+};
+
+byte rightMarker[] = {
+  B00000,
+  B11100,
+  B10101,
+  B11000,
+  B10101,
+  B10100,
+  B00000,
+  B00000
 };
 
 void lcdPrintCenter(String text, int row) 
